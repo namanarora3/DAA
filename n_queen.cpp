@@ -1,69 +1,79 @@
-#include<iostream>
 #include <bits/stdc++.h>
-#define N 4
 using namespace std;
 
-void printSolution(int b[N][N]){
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < N; j++)
-        {
-            if(b[i][j]){
-                cout<<"Q ";
-            }
-            else{
-                cout<<".";
-            }
-        }
-        cout<<endl;
-    }
-    
+vector<vector<int> > result;
+
+bool isSafe(vector<vector<int> > board,
+			int row, int col)
+{
+	int i, j;
+	int N = board.size();
+
+	for (i = 0; i < col; i++)
+		if (board[row][i])
+			return false;
+
+	for (i = row, j = col; i >= 0 && j >= 0; i--, j--)
+		if (board[i][j])
+			return false;
+
+	for (i = row, j = col; j >= 0 && i < N; i++, j--)
+		if (board[i][j])
+			return false;
+
+	return true;
 }
 
+bool solveNQUtil(vector<vector<int> >& board, int col)
+{
+	int N = board.size();
+	if (col == N) {
+		vector<int> v;
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (board[i][j] == 1)
+					v.push_back(j + 1);
+			}
+		}
+		result.push_back(v);
+		return true;
+	}
 
-bool isSafe(int b[N][N],int r,int c){
-    for(int j=0;j<c;j++){
-        if(b[r][j])
-        return false;
-    }
-    for(int i=r,j=c;i>=0 && j>=0;i--,j--){
-        if(b[i][j])
-        return false;
-    }
-    for(int i=r,j=c;i<N && j>=0;i++,j--){
-        if(b[i][j])
-        return false;
-    }
-    return true;
+	bool res = false;
+	for (int i = 0; i < N; i++) {
+		if (isSafe(board, i, col)) {
+			board[i][col] = 1;
+			res = solveNQUtil(board, col + 1) || res;
+			board[i][col] = 0; // BACKTRACK
+		}
+	}
+	return res;
+}
+vector<vector<int> > nQueen(int n)
+{
+	result.clear();
+	vector<vector<int> > board(n, vector<int>(n, 0));
+
+	if (solveNQUtil(board, 0) == false) {
+		return {};
+	}
+
+	sort(result.begin(), result.end());
+	return result;
 }
 
-bool solve(int b[N][N],int c){
-    if(c>=N)
-    return true;
+// Driver Code
+int main()
+{
+	int n = 4;
+	vector<vector<int> > v = nQueen(n);
 
-    for(int i=0;i<N;i++){
-        if(isSafe(b,i,c)){
-        b[i][c]=true;
-        if(solve(b,c+1))
-        return true;
-        b[i][c]=0;
-        }
-    }
-    return false;
-}
+	for (auto ar : v) {
+		cout << "[";
+		for (auto it : ar)
+			cout << it << " ";
+		cout << "]";
+	} 
 
-
-bool solveP() {
-    int b[N][N]={0};
-if(solve(b,0)==false){
-    cout<<"Solution not possible"<<endl;
-    return false;
-}
-printSolution(b);
-return true;
-}
-
-int main(){
-    solveP();
-return 0;
+	return 0;
 }

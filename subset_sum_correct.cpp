@@ -28,7 +28,7 @@ bool sumsubset(const int a[], int n, int sum, vector<int> &solution, int s, int 
 
 void display(const vector<int> &solution)
 {
-    // cout << "Yes, the following elements can be used to make the sum 31: ";
+    cout << "Yes, the following elements can be used to make the sum 31: ";
     cout << endl;
     for (int i = 0; i < solution.size(); i++)
     {
